@@ -1,8 +1,8 @@
 {
-  "name": "hubot-github-issue-lookup",
-  "description": "Have hubot echo back github issue titles when it hears the pound symbol followed by a number",
-  "author": "SimplyBuilt",
-  "version": "0.1.0",
+  "name": "hubot-github-issue-find",
+  "description": "Have hubot echo back github issue titles when it hears the pound symbol followed by a number. Based in the old github issues hobut-script",
+  "author": "msdark",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "files": [
     "dist/index.js"
@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"No tests defined.\""
   },
-  "repository": "SimplyBuilt/hubot-github-issue-lookup",
+  "repository": "msdark/hubot-github-issue-lookup",
   "keywords": [],
   "license": "MIT",
   "dependencies": {

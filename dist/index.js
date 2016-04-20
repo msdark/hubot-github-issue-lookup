@@ -1,45 +1,62 @@
 "use strict";
 
-// Description:
-//   Show open issues from a Github repository
-//
-// Configuration:
-//   HUBOT_GITHUB_REPO
-//   HUBOT_GITHUB_TOKEN
-//
-// Commands:
-//   #nnn - link to Github issue nn from HUBOT_GITHUB_REPO project
-//
-// Notes:
-//   If, for example, HUBOT_GITHUB_USER_JOHN is set to GitHub user login
-//   'johndoe1', you can ask `show john's issues` instead of `show johndoe1's
-//   issues`. This is useful for mapping chat handles to GitHub logins.
-//
-//   HUBOT_GITHUB_API allows you to set a custom URL path (for Github enterprise users)
-//
-// Author:
-//   Michael Coyne (@mikeycgto)
-
-var TOKEN = process.env.HUBOT_GITHUB_TOKEN;
-var REPO = process.env.HUBOT_GITHUB_REPO;
-
+/*
+# Description:
+#   Github issue link looks for #nnn and links to that issue for your default
+#   repo. Eg. "Hey guys check out #273"
+#   Defaults to issues in HUBOT_GITHUB_REPO, unless a repo is specified Eg. "Hey guys, check out awesome-repo#273"
+#
+# Dependencies:
+#   "githubot": "0.4.x"
+#
+# Configuration:
+#   HUBOT_GITHUB_REPO
+#   HUBOT_GITHUB_TOKEN
+#   HUBOT_GITHUB_API
+#   HUBOT_GITHUB_ISSUE_LINK_IGNORE_USERS
+#
+# Commands:
+#   #nnn - link to GitHub issue nnn for HUBOT_GITHUB_REPO project
+#   repo#nnn - link to GitHub issue nnn for repo project
+#   user/repo#nnn - link to GitHub issue nnn for user/repo project
+#
+# Notes:
+#   HUBOT_GITHUB_API allows you to set a custom URL path (for Github enterprise users)
+#
+# Author:
+#   tenfef
+*/
 module.exports = function (robot) {
-    if (TOKEN == undefined || REPO == undefined) {
-        console.warn("Missing HUBOT_GITHUB_TOKEN and/or HUBOT_GITHUB_REPO");
-        return;
+  var github = require("githubot")(robot);
+
+  robot.hear(/((\S*|^)?#(\d+)).*/, function (msg) {
+    var base_url = void 0,
+        bot_github_repo = void 0,
+        issue_number = void 0,
+        issue_title = void 0;
+    if (msg.message.user.name.match(new RegExp(githubIgnoreUsers, "gi"))) {
+      return;
     }
-
-    var github = require("githubot")(robot);
-
-    robot.hear(/((\S*|^)?#(\d+)).*/, function (msg) {
-        var issue = +msg.match[3];
-
-        if (issue == undefined || isNaN(issue)) return;
-
-        github.get("repos/" + REPO + "/issues/" + issue, function (issue_resp) {
-            var state = issue_resp.state || 'UNKNOWN';
-
-            msg.send("Issue " + issue + ": " + issue_resp.title + " (" + state.toUpperCase() + " - " + issue_resp.html_url + ")");
-        });
+    issue_number = msg.match[3];
+    if (isNaN(issue_number)) {
+      return;
+    }
+    if (msg.match[2] === void 0) {
+      bot_github_repo = github.qualified_repo(process.env.HUBOT_GITHUB_REPO);
+    } else {
+      bot_github_repo = github.qualified_repo(msg.match[2]);
+    }
+    issue_title = "";
+    base_url = process.env.HUBOT_GITHUB_API || 'https://api.github.com';
+    github.get(base_url + "/repos/" + bot_github_repo + "/issues/" + issue_number, function (issue_obj) {
+      var url = void 0;
+      issue_title = issue_obj.title;
+      if (!process.env.HUBOT_GITHUB_API) {
+        url = "https://github.com";
+      } else {
+        url = base_url.replace(/\/api\/v3/, '');
+      }
+      msg.send("Issue " + issue_number + ": " + issue_title + " " + url + "/" + bot_github_repo + "/issues/" + issue_number);
     });
+  });
 };
