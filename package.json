@@ -2,7 +2,7 @@
   "name": "hubot-github-issue-find",
   "description": "Have hubot echo back github issue titles when it hears the pound symbol followed by a number. Based in the old github issues hobut-script",
   "author": "msdark",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "dist/index.js",
   "files": [
     "dist/index.js"

@@ -1,11 +1,13 @@
-# hubot-github-issue-lookup
+# hubot-github-issue-find
 
 Have hubot echo back github issue titles when it hears something in the form of `/#\d+/`. Written in ES6 with Babel.
+
+Also supports: `repo-name#123` or `user/repo-name#123`. Yay! :rocket:
 
 ## Installation
 
 ```bash
-npm install --save hubot-github-issue-lookup
+npm install --save hubot-github-issue-find
 ```
 
 ## Usage
