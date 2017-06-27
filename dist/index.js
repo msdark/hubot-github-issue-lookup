@@ -33,8 +33,10 @@ module.exports = function (robot) {
     var base_url = void 0,
         bot_github_repo = void 0,
         issue_number = void 0,
-        issue_title = void 0;
-    if (msg.message.user.name.match(new RegExp(githubIgnoreUsers, "gi"))) {
+        issue_title = void 0,
+        ignore_users = process.env.HUBOT_GITHUB_ISSUE_LINK_IGNORE_USERS || '';
+
+    if (msg.message.user.name.match(new RegExp(ignore_users, "gi"))) {
       return;
     }
     issue_number = msg.match[3];
